@@ -1,0 +1,13 @@
+<launch>
+  <arg name="robot_type" default="kuavo" />
+
+  <arg name="robot_version"      default="$(optenv ROBOT_VERSION 40)"/>
+  <param name="robot_version"     value="$(arg robot_version)"/>
+  <!-- 如果是ocs2，请使用参数 robot_type:=ocs2 -->
+  <param name="robot_type" value="ocs2"/>  
+
+  <env name="PYTHONPATH" value="$(env PYTHONPATH):$(find planarmwebsocketservice)" />
+  <node pkg="planarmwebsocketservice" type="plan_arm_action_websocket_server.py" name="plan_arm_action_websocket_server" output="screen" args="--robot_type=$(arg robot_type)">
+  
+  </node>
+</launch>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="robot_version" default="45"/>
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kuavo_assets)/models/biped_s$(arg robot_version)/urdf/biped_s$(arg robot_version)_gazebo.xacro"/>
+
+    <!-- 启动点云过滤节点 -->
+    <node name="robot_pointcloud_filter" pkg="robot_pointcloud_filter" type="robot_pointcloud_filter" output="screen">
+        <param name="filter_radius" value="0.03" />      <!-- 过滤半径，单位：米 -->
+        <param name="robot_cloud_density" value="0.01" /> <!-- 机器人点云密度 -->
+        <param name="publish_robot_cloud" value="true" /> <!-- 是否发布机器人点云用于调试 -->
+
+        <param name="voxel_leaf_size" value="0.01" />
+        <param name="max_points_per_link" value="100000" />
+        <param name="use_voxel_filter" value="true" />
+    </node>
+</launch>

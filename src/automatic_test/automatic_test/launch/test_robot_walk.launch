@@ -1,0 +1,29 @@
+<launch>
+  <rosparam command="load" file="$(find automatic_test)/config/params.yaml"/>
+
+  <arg name="log_level" default="INFO"/>
+  <arg name="sim" default="true"/>
+  <arg name="test_cmd_vel" default="false"/>
+  <arg name="test_cmd_pose" default="false"/>
+  <arg name="test_cmd_pose_world" default="false"/>
+  <param name="/robot_manager/sim" type="bool" value="$(arg sim)"/>
+  <param name="/test_robot_walk/test_cmd_vel" type="bool" value="$(arg test_cmd_vel)"/>
+  <param name="/test_robot_walk/test_cmd_pose" type="bool" value="$(arg test_cmd_pose)"/>
+  <param name="/test_robot_walk/test_cmd_pose_world" type="bool" value="$(arg test_cmd_pose_world)"/>
+
+  <group if="$(arg sim)">
+      <param name="/mpc_path_tracer_node/world_frame" value="odom"/>
+      <param name="/mpc_path_tracer_node/robot_frame" value="base_link"/>
+      <param name="/mpc_path_tracer_node/home_frame" value="home"/>
+  </group>  
+
+  <node pkg="automatic_test" type="mocap_tf_pub.py" name="mocap_tf_pub" output="screen"/>
+
+  <node pkg="automatic_test" type="robot_manager.py" name="robot_manager" output="screen"/>
+
+  <node pkg="automatic_test" 
+        type="test_robot_walk.sh" 
+        name="robot_walk_test" 
+        output="screen"
+        args="--log-level $(arg log_level)"/>
+</launch>

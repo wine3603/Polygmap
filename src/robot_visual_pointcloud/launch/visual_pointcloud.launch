@@ -1,0 +1,6 @@
+<launch>
+  <arg name="robot_version" default="45"/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kuavo_assets)/models/biped_s$(arg robot_version)/urdf/biped_s$(arg robot_version)_gazebo.xacro"/>
+  <node name="visual_pointcloud_node" pkg="robot_visual_pointcloud" type="visual_pointcloud_node" output="screen"/>
+</launch>
+

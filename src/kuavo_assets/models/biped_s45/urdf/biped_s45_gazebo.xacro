@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="biped_s45_with_realsense">
+
+  <!-- 引入机器人主体 -->
+  <xacro:include filename="$(find kuavo_assets)/models/biped_s45/urdf/biped_s45_gazebo.urdf"/>
+
+  <!-- depth cam 设置 -->
+  <xacro:include filename="$(find realsense_ros_gazebo)/xacro/depthcam.xacro"/>
+
+  <!-- d435 声明 -->
+  <!-- <xacro:realsense_d435 sensor_name="camera" parent_link="camera_base" rate="30">
+    <origin rpy="0 0 0 " xyz="0 0 0"/>
+  </xacro:realsense_d435> -->
+
+  <!-- d435 声明 -->
+  <xacro:realsense_d435 sensor_name="l515" parent_link="l515_base" rate="30">
+    <origin rpy="0 0 0 " xyz="0 0 0"/>
+  </xacro:realsense_d435>
+
+
+  <xacro:include filename="$(find livox_laser_simulation)/urdf/livox_mid360.xacro"/>
+
+  <!-- 挂在机器人 base_link 上，抬高 0.5m -->
+  <!-- <xacro:Livox_Mid360 name="livox" parent_link="base_link" xyz="0.18 0 0" rpy="0 1.57 0"/> -->
+  <xacro:Livox_Mid360 name="livox" parent_link="radar" xyz="0 0 0" rpy="0 3.14 0"/>
+</robot>

@@ -1,0 +1,11 @@
+<launch>
+  <node pkg="polygon_mapping"
+        type="main_ros_gazebo_old.py"
+        name="polygon_mapping_node"
+        output="screen">
+  </node>
+</launch>
+
+
+
+

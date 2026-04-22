@@ -1,0 +1,170 @@
+<?xml version="1.0" ?>
+
+<launch>
+
+    <!-- 输出日志格式 -->
+    <env name="ROSCONSOLE_FORMAT" value="[${severity} ][${time:%Y-%m-%d-%H:%M:%S}][${node}]: ${message}"/>
+
+    <arg name="output_system_info" default="true"/>
+    <arg name="vr_remote_control" default="false"/>
+    <arg name="robot_type"         default="humanoid"/>
+    <arg name="rviz"                default="true" />
+    <arg name="multiplot"          default="false"/>
+    <arg name="robot_version"      default="$(optenv ROBOT_VERSION 40)"/>
+    <!-- 添加楼梯加载参数 -->
+    <arg name="load_stairs"        default="false" doc="是否加载楼梯到场景中"/>
+    <!-- load the robot version manager -->
+    <include file="$(find humanoid_controllers)/launch/robot_version_my.launch">
+      <arg name="robot_version" value="$(arg robot_version)"/>
+      <arg name="rviz" value="$(arg rviz)"/>
+    </include>
+
+    <arg name="use_external_mpc"   default="true"/>
+    <arg name="wbc_frequency"      default="500"/>
+    <arg name="sensor_frequency"   default="500"/>
+    <arg name="use_joystick"       default="true"/>
+    <arg name="with_estimation"    default="true"/>
+    <arg name="use_joint_filter"   default="false"/>
+    <arg name="estimator_type"     default="1"/>
+    <arg name="wbc_only"           default="false"/>
+    <arg name="play_back"          default="false"/>  
+    <arg name="joystick_type"      default="sim"/>
+    <arg name="arm_move_spd"      default="3.0"/>
+    <arg name="start_way"          default="manual"/>
+    <arg name="use_shm_communication"  value="true"/>
+
+    <!-- Set with_coredump parameter based on coredump value -->
+    <arg name="coredump" default="false"/>
+    <arg name="with_coredump" value="--with-coredump" if="$(arg coredump)"/>
+    <arg name="with_coredump" value="" unless="$(arg coredump)"/>
+
+    <!-- multiplot -->
+    <group if="$(arg multiplot)">
+      <include file="$(find humanoid_interface_ros)/launch/multiplot.launch"/>
+    </group>
+
+    <!-- make the files into global parameters -->
+    <param name="multiplot"         value="$(arg multiplot)"/>
+    <param name="wbc_only"          value="$(arg wbc_only)"/>
+    <param name="use_external_mpc"  value="$(arg use_external_mpc)"/>
+    <param name="wbc_frequency"     value="$(arg wbc_frequency)"/>
+    <param name="sensor_frequency"  value="$(arg sensor_frequency)"/>
+    <param name="with_estimation"   value="$(arg with_estimation)"/>
+    <param name="use_joint_filter"  value="$(arg use_joint_filter)"/>
+    <param name="estimator_type"    value="$(arg estimator_type)"/>
+    <param name="play_back"         value="$(arg play_back)"/>
+    <param name="joystick_type"  value="$(arg joystick_type)"/>
+    <param name="arm_move_spd"  value="$(arg arm_move_spd)"/>
+    <param name="start_way"  value="$(arg start_way)"/>
+    <param name="use_shm_communication"  value="true"/>
+    <param name="build_cppad_state"   value="0"/>  <!-- build_cppad_state is set to 0(waiting), 1(building), 2(done) -->
+    
+    <!-- Launch script to collect kuavo-launch information -->
+    <node pkg="humanoid_controllers" type="collect_launch_info.sh" name="collect_launch_info" />
+    
+   <!-- mpc node -->
+    <group if="$(arg use_external_mpc)">
+      <node pkg="humanoid_interface_ros" type="humanoid_sqp_mpc" name="humanoid_sqp_mpc" output="screen" required="true" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+    </group>
+    <!-- <group unless="$(arg use_joystick)"> -->
+
+      <node pkg="humanoid_interface_ros" type="humanoid_gait_command" name="humanoid_gait_command"
+            output="screen" launch-prefix="gnome-terminal --disable-factory --"/>
+    <!-- </group> -->
+
+    <node pkg="humanoid_interface_ros" type="humanoid_hand_control" name="humanoid_hand_control" output="screen" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+    <node pkg="humanoid_interface_ros" type="humanoid_VR_hand_control" name="humanoid_VR_hand_control" output="screen" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+    <node pkg="humanoid_interface_ros" type="humanoid_quest_control_with_arm" name="humanoid_quest_control_with_arm" output="screen" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+
+    <node pkg="humanoid_interface_ros" type="humanoid_Arm_time_target_control" name="humanoid_Arm_time_target_control" output="screen" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+    <node pkg="humanoid_interface_ros" type="humanoid_gait_switch_by_name" name="humanoid_gait_switch_by_name" output="screen" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+
+
+    <!-- nodelet manager -->
+    <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" respawn="false" 
+       output="screen" required="true" clear_params="true"
+       launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)">
+        <param name="num_worker_threads" type="int" value="10" />
+    </node>
+    <node pkg="nodelet" type="nodelet" name="nodelet_controller" args="load HumanoidControllerNodelet nodelet_manager" respawn="false" output="screen" required="true">
+      </node>
+
+    <group unless="$(arg play_back)">
+      <include file="$(find gazebo_sim)/launch/my.launch">
+        <arg name="use_stairs" value="$(arg load_stairs)"/>
+      </include>
+    </group>
+      <include file="$(find humanoid_interface)/launch/rosbag_nodelet.launch"/>
+   <group if="$(arg use_joystick)">
+      <group if="$(eval arg('joystick_type') == 'h12')">
+        <include file="$(find humanoid_controllers)/launch/joy/joy_control_h12.launch">
+          <arg name="start_way" value="$(arg start_way)"/>
+        </include>
+      </group>
+      <group if="$(eval arg('joystick_type') == 'sim')">
+        <include file="$(find humanoid_controllers)/launch/joy/joy_control_sim.launch">
+          <arg name="joystick_type" value="$(arg joystick_type)"/>
+        </include>
+      </group>
+      <group if="$(eval arg('joystick_type') == 'bt2' or arg('joystick_type') == 'bt2pro')">
+        <include file="$(find humanoid_controllers)/launch/joy/joy_control_bt.launch">
+          <arg name="joystick_type" value="$(arg joystick_type)"/>
+        </include>
+      </group>
+    </group> 
+
+    <!--publish system state  -->
+    <group if="$(arg output_system_info)">
+      <node pkg="humanoid_controllers" type="system_info_publisher.py" name="system_info_publisher"/>
+    </group>
+    <!-- monitor node -->
+    <node pkg="kuavo_monitor" type="kuavo_monitor_node" name="kuavo_monitor_node" launch-prefix="$(find humanoid_controllers)/scripts/start_node.sh $(arg with_coredump)"/>
+
+    <group if="$(arg vr_remote_control)">
+      <include file="$(find noitom_hi5_hand_udp_python)/launch/launch_quest3_ik.launch"/>
+    </group>
+
+    <!-- 参数开关，控制是否运行 polygon_mapping -->
+    <arg name="run_polygon_mapping" default="false" />
+
+    <!-- 可调参数 -->
+    <!-- 稠密点云的分辨率（单位：米），值越小点云越密集，处理也越慢 -->
+    <arg name="resolution" default="0.01" />
+    <!-- base_link 坐标系中，XY 平面允许的点云最大范围（以中心为原点的正方形，单位：米） -->
+    <!-- <arg name="range_xy" default="0.8" /> -->
+    <arg name="range_xy" default="1.3" />
+
+    <arg name="erosion_rounds" default="13" /> 
+    <arg name="erosion_rounds_above_below" default="25" /><!-- 12+8  半只脚长+安全距离 -->
+
+    <!-- 允许的最大高度（相对于脚底最低点 z + z_threshold），用于滤除高出地面的点 -->
+    <arg name="z_threshold" default="0.2" />
+    <!-- 高度分层步长，单位米 -->
+    <arg name="layer_height" default="0.001" />
+    <!-- 脚底附近层高度范围阈值，单位米（如果需要的话） -->
+    <arg name="foot_layer_delta" default="0.04" />
+
+    <!-- 条件 include polygon_mapping.launch -->
+    <include file="$(find polygon_mapping)/launch/polygon_mapping.launch" if="$(arg run_polygon_mapping)" />
+
+    <!-- 条件 include convex_hull_dense.launch，传递参数 -->
+    <include file="$(find convex_hull_from_marker)/launch/convex_hull_dense.launch" if="$(arg run_polygon_mapping)">
+        <arg name="resolution" value="$(arg resolution)" />
+        <arg name="range_xy" value="$(arg range_xy)" />
+        <arg name="erosion_rounds" value="$(arg erosion_rounds)" />
+        <arg name="erosion_rounds_above_below" value="$(arg erosion_rounds_above_below)" />
+        <arg name="z_threshold" value="$(arg z_threshold)" />
+        <arg name="layer_height" value="$(arg layer_height)" />
+        <arg name="foot_layer_delta" value="$(arg foot_layer_delta)" />
+    </include>
+
+    <!-- 发布 world -> odom 的静态变换 -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_odom_broadcaster"
+          args="0 0 0 0 0 0 odom world" />
+
+    <node pkg="joy" type="joy_node" name="joy_node">
+      <param name="dev" value="/dev/input/js0"/>
+      <param name="deadzone" value="0.1"/>
+      <param name="autorepeat_rate" value="20.0"/>
+    </node>
+</launch>

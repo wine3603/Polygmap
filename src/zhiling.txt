@@ -1,0 +1,24 @@
+# 不启动 polygon_mapping
+roslaunch humanoid_controllers load_kuavo_gazebo_sim.launch
+roslaunch elevation_mapping_cupy sim.launch
+
+# 启动 polygon_mapping
+roslaunch humanoid_controllers load_kuavo_gazebo_sim.launch run_polygon_mapping:=true
+
+rosrun humanoid_controllers stairClimbPlanner1.py
+
+rosrun humanoid_interface_ros simStepControlSwingTest.py
+
+roslaunch teleop_twist_joy teleop.launch config:=f710_teleop.yaml
+
+
+
+rosparam dump robot_config.yaml
+
+
+
+rosparam load robot_config.yaml
+humanoid_description
+rosrun tf2_ros static_transform_publisher 0.0 0.0 0.8366 1.5707 0.0 0.0 odom camera_init
+
+rosbag record /tf_static /tf /polygon_markers /polygon_new_markers /humanoid/optimizedStateTrajectory /convex_hull_dense_filler/nearest_rectangles /convex_hull_dense_filler/nearest_rectangles2 /camera_path

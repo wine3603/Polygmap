@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="polygon_mapping_cuda" type="image_subscriber_node" name="image_subscriber_node" output="screen" />
+</launch>

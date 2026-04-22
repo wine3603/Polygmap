@@ -1,0 +1,53 @@
+#### 基本参数 ########
+
+save_data: false                          ## 是否保存数据集
+
+#### 相机参数 ##########
+camera_serial_id: 'f1231454'             # 用于地形映射的深度相机的序列号
+depth_width: 640
+depth_height: 480
+# depth_width: 640
+# depth_height: 480
+L515_pre_processing_sharpening: 3.0      # 相机对深度图像的内部锐化处理参数
+L515_laser_power: 100.0                  # 激光功率
+L515_confidence_threshold: 2.0           # 置信度阈值（含义不明确）
+
+## 深度相机内参
+depth_fx: 347.99755859375
+depth_fy: 347.99755859375
+depth_cx: 320.0
+depth_cy: 240.0
+# depth_fx: 450.57379150390625 
+# depth_fy: 450.9761657714844
+# depth_cx: 326.4198303222656 
+# depth_cy: 185.34616088867188
+
+rgb_width: 640              # RGB图像仅用于显示
+rgb_height: 480
+
+#### 图像处理 ###########
+
+anisotropic_diffusion_num_iter: 60       # 各向异性扩散滤波的迭代次数
+anisotropic_diffusion_kappa: 134
+anisotropic_diffusion_gamma: 2
+
+use_sharpening: True                     # 边缘检测前对法线图进行锐化处理
+Canny_thresh1: 50
+Canny_thresh2: 100                       # thresh2应大于thresh1
+closing_kernel: 13                       # 用于闭合过度模糊边缘的闭运算内核大小
+
+### RANSAC参数
+ran_max_trials: 20                       ## RANSAC拟合尝试的次数
+ran_min_samples: 3                       ## RANSAC中拟合平面所需的最少点数为3个
+ran_residual_threshold: 0.01             ## 内点距离阈值（米）!!
+ran_outlier_threshold: 0.05              ## 外点容差比率
+
+#### 地图管理器 #########
+
+min_area_thresh: 5000                    # 像素面积低于此阈值的多边形将被忽略
+merge_dis_thresh: 0.05                   # 合并多边形的距离阈值（米）
+
+# map_frame: 'world'                       # 里程计源使用的地图坐标系
+# camera_frame: 'camera2_depth'
+map_frame: 'odom'                       # 里程计源使用的地图坐标系
+camera_frame: 'l515_depth_optical_frame'

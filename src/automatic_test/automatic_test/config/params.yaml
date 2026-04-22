@@ -1,0 +1,65 @@
+mpc_path_tracer_node:
+  # 全局帧参数
+  world_frame: "mocap_frame"
+  robot_frame: "mocap_robot"
+  home_frame: "mocap_base"
+  motion_interface: "/cmd_vel"
+
+  # the global motion parameters
+  dt: 0.1     # s
+  v_max_linear: 0.6   # m/s
+  v_max_angular: 0.4  # rad/s
+
+  # the max linear velocity of different path types
+  path_velocities:
+    line: 0.6    # m/s
+    circle: 0.4  # m/s
+    square: 0.4   # m/s
+    triangle: 0.4 # m/s
+    scurve: 0.4  # m/s
+
+  # 路径生成器参数
+  path_generators:
+    # 圆形路径参数
+    circle:
+      radius: 2.0  # m
+
+    # 方形路径参数
+    square:
+      side_length: 2.0  # m
+      yaw_offset: -45.0
+
+    # S形路径参数
+    scurve:
+      length: 1.5      # m
+      amplitude: 0.5    # m
+
+    line:
+      length: 2.0       
+      yaw_offset: 0.0
+    
+    triangle:
+      length: 1.0       
+      yaw_offset: -30.0
+
+robot_manager_node:
+  sim: true
+  robot_ready: false
+
+test_robot_walk:
+  round: 1
+  path_types: [triangle, line, circle, square, scurve]
+  test_cmd_vel: true
+  test_cmd_pose: true
+
+test_single_step_control:
+  world_frame: "mocap_frame"
+  robot_frame: "mocap_robot"
+  home_frame: "mocap_base"
+  round: 10
+  forward_step_size: 0.08
+  backward_step_size: -0.08
+  left_move_step_size: 0.05
+  right_move_step_size: -0.05
+  rotate_left_step_size: 45
+  rotate_right_step_size: -45

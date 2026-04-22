@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="standalone_apriltag_cube">
+  
+  <!-- 定义参数 -->
+  <xacro:property name="table_height" value="0.8" />  <!-- 桌子高度参数 -->
+  <xacro:property name="table_thickness" value="0.04" />  <!-- 桌面厚度 -->
+  <xacro:property name="leg_radius" value="0.02" />  <!-- 桌腿半径 -->
+  
+  <!-- 桌子位置参数 / 参数相对于世界来说 -->
+  <xacro:property name="table_x" value="0.0" />  <!-- 桌子x坐标 -->
+  <xacro:property name="table_y" value="-1.0" />  <!-- 桌子y坐标 -->
+  <xacro:property name="table_z" value="${table_height}" />  <!-- 桌子z坐标 -->
+  <xacro:property name="table_roll" value="0.0" />  <!-- 桌子roll角度 -->
+  <xacro:property name="table_pitch" value="0.0" />  <!-- 桌子pitch角度 -->
+  <xacro:property name="table_yaw" value="0.0" />  <!-- 桌子yaw角度 -->
+  
+  <!-- 立方体位置参数/参数相对于桌子来说 -->
+  <xacro:property name="cube_x" value="0.0" />  <!-- 立方体x坐标 -->
+  <xacro:property name="cube_y" value="0.0" />  <!-- 立方体y坐标 -->
+  <xacro:property name="cube_z" value="${table_thickness/2 + 0.05}" />  <!-- 立方体z坐标 -->
+  <xacro:property name="cube_roll" value="0.0" />  <!-- 立方体roll角度 -->
+  <xacro:property name="cube_pitch" value="3.14159" />  <!-- 立方体pitch角度 -->
+  <xacro:property name="cube_yaw" value="0.0" />  <!-- 立方体yaw角度 -->
+  
+  <!-- 引入apriltag -->
+  <xacro:include filename="$(find kuavo_assets)/models/apriltag/urdf/apriltag.xacro"/>
+  
+  <!-- 添加一个世界链接作为根链接 -->
+  <link name="world"/>
+  
+  <!-- 创建一个桌子链接 -->
+  <link name="table_link">
+    <visual>
+      <geometry>
+        <box size="0.4 0.4 ${table_thickness}"/>
+      </geometry>
+      <material name="wood">
+        <color rgba="0.8 0.6 0.4 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.4 0.4 ${table_thickness}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="5.0"/>
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+  </link>
+  
+  <!-- 将世界链接与桌子连接 -->
+  <joint name="world_to_table_joint" type="fixed">
+    <parent link="world"/>
+    <child link="table_link"/>
+    <origin xyz="${table_x} ${table_y} ${table_z}" rpy="${table_roll} ${table_pitch} ${table_yaw}"/>
+  </joint>
+  
+  <!-- 创建四条桌腿 -->
+  <link name="table_leg1">
+    <visual>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+      <material name="wood">
+        <color rgba="0.7 0.5 0.3 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  
+  <link name="table_leg2">
+    <visual>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+      <material name="wood">
+        <color rgba="0.7 0.5 0.3 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  
+  <link name="table_leg3">
+    <visual>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+      <material name="wood">
+        <color rgba="0.7 0.5 0.3 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  
+  <link name="table_leg4">
+    <visual>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+      <material name="wood">
+        <color rgba="0.7 0.5 0.3 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${leg_radius}" length="${table_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  
+  <!-- 连接桌腿到桌面 -->
+  <joint name="table_to_leg1_joint" type="fixed">
+    <parent link="table_link"/>
+    <child link="table_leg1"/>
+    <origin xyz="0.15 0.15 ${-table_height/2}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="table_to_leg2_joint" type="fixed">
+    <parent link="table_link"/>
+    <child link="table_leg2"/>
+    <origin xyz="-0.15 0.15 ${-table_height/2}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="table_to_leg3_joint" type="fixed">
+    <parent link="table_link"/>
+    <child link="table_leg3"/>
+    <origin xyz="0.15 -0.15 ${-table_height/2}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="table_to_leg4_joint" type="fixed">
+    <parent link="table_link"/>
+    <child link="table_leg4"/>
+    <origin xyz="-0.15 -0.15 ${-table_height/2}" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- 创建一个基础链接作为立方体的中心 -->
+  <link name="apriltag_cube_base">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <material>
+        <color rgba="0.8 0.8 0.8 0.5"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- 将立方体固定在桌子上 -->
+  <joint name="table_to_cube_joint" type="fixed">
+    <parent link="table_link"/>
+    <child link="apriltag_cube_base"/>
+    <origin xyz="${cube_x} ${cube_y} ${cube_z}" rpy="${cube_roll} ${cube_pitch} ${cube_yaw}"/>
+  </joint>
+  
+
+  <xacro:include filename="$(find kuavo_assets)/models/apriltag/urdf/apriltag_cube.xacro"/>
+  <xacro:left_arm_apriltags parent_link="apriltag_cube_base"/>
+  <!-- 确保您已为这些ID创建了相应的材质文件，放在 kuavo_assets/models/apriltag/materials/ 目录下 -->
+</robot> 

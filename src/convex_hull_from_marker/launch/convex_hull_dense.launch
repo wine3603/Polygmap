@@ -1,0 +1,30 @@
+<launch>
+    <!-- 参数声明 -->
+    <!-- 点云分辨率，单位：米，值越小点云越密 -->
+    <arg name="resolution" default="0.01" />
+    <!-- XY 平面点云范围，单位：米（以 base_link 为中心的正方形边长） -->
+    <arg name="range_xy" default="0.8" />
+    <!-- 腐蚀迭代次数，值越大腐蚀越强 -->
+    <arg name="erosion_rounds" default="13" />
+    <!-- 腐蚀阈值，邻居数低于该值像素将被腐蚀 -->
+    <arg name="erosion_rounds_above_below" default="25" />
+    <!-- 点云允许最大高度，单位：米，用于滤除高于地面一定高度的点 -->
+    <arg name="z_threshold" default="0.2" />
+    <!-- 分层高度，单位：米 -->
+    <arg name="layer_height" default="0.001" />
+    <!-- 足部层高度范围阈值（如果需要） -->
+    <arg name="foot_layer_delta" default="0.04" />
+
+    <!-- 条件 include polygon_mapping.launch -->
+    <!-- <include file="$(find polygon_mapping)/launch/polygon_mapping.launch" /> -->
+
+    <node name="convex_hull_dense_filler" pkg="convex_hull_from_marker" type="convex_hull_dense_filler" output="screen">
+        <param name="resolution" value="$(arg resolution)" />
+        <param name="range_xy" value="$(arg range_xy)" />
+        <param name="erosion_rounds" value="$(arg erosion_rounds)" />
+        <param name="erosion_rounds_above_below" value="$(arg erosion_rounds_above_below)" />
+        <param name="z_threshold" value="$(arg z_threshold)" />
+        <param name="layer_height" value="$(arg layer_height)" />
+        <param name="foot_layer_delta" value="$(arg foot_layer_delta)" />
+    </node>
+</launch>

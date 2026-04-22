@@ -1,0 +1,13 @@
+<launch>
+  <!-- 启动运动学mpc -->
+  <include file="$(find mobile_manipulator_controllers)/launch/mobile_manipulator_controller.launch"/>
+  
+  <!-- 启动 ARControlNode -->
+  <node pkg="ar_control" type="ar_control_node.py" name="ar_control_node" output="screen" respawn="true" respawn_delay="5" />
+  
+  <!-- Tag Tracker Node -->
+  <node pkg="grab_box" type="tag_tracker_node" name="tag_tracker_node" output="screen" respawn="true" />
+  
+  <!-- Virtual Robot Hand Position Node -->
+  <node pkg="ar_control" type="virtual_robot_hand_position.py" name="virtual_robot_hand_position" output="screen" respawn="true" />
+</launch>
