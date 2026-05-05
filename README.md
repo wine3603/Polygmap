@@ -1,10 +1,10 @@
 Real-time and efficient polygonal mapping designed for humanoid robots.
 
 ## Demo
-### straight_stairs_mapping
+### Simulated Stair-Climbing Experiment
 ![straight_stairs_mapping](assets/straight_stairs_mapping.gif)
 
-### spiral_stairs_mapping
+### Real-World Stair-Climbing Experiment
 ![spiral_stairs_mapping](assets/spiral_stairs_mapping.gif)
 
 ## Install
@@ -14,7 +14,7 @@ Real-time and efficient polygonal mapping designed for humanoid robots.
 
 ### Dependencies
 This package depends on
-- pyrealsense2
+- ocs2
 - cupy
 - ...
 
@@ -25,7 +25,7 @@ It is assumed that ROS is installed.
 ```bash
 mkdir -p catkin_ws/src
 cd catkin_ws/src
-git clone https://github.com/BTFrontier/polygon_mapping.git
+git clone ocshttps://github.com/wine3603/Polygmap.git
 
 ```
 
@@ -35,7 +35,9 @@ git clone https://github.com/BTFrontier/polygon_mapping.git
 3. Build a package.
 ```bash
 cd catkin_ws
-catkin build polygon_mapping
+catkin config -DCMAKE_ASM_COMPILER=/usr/bin/as -DCMAKE_BUILD_TYPE=Release # Important! 
+source installed/setup.bash # 加载一些已经安装的ROS包依赖环境，包括硬件包等
+catkin build
 ```
 
 ## Datasets
